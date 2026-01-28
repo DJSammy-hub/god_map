@@ -5,7 +5,7 @@ from lunar_python import Lunar, Solar
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 
-# --- 1. 頁面設定 (更新標題) ---
+# --- 1. 頁面設定 ---
 st.set_page_config(
     page_title="找到我的神老闆｜全台廟宇地圖", 
     page_icon="⛩️", 
@@ -16,76 +16,37 @@ st.set_page_config(
 TEMPLE_DB = {
     "武財神 (關聖帝君)": {
         "key": "guan_gong",
-        "台北市": "台北行天宮",
-        "新北市": "金瓜石勸濟堂",
-        "基隆市": "基隆聖安宮",
-        "桃園市": "大溪普濟堂",
-        "新竹縣": "普元宮",
-        "新竹市": "古奇峰普天宮",
-        "苗栗縣": "玉清宮",
-        "台中市": "台中南天宮",
-        "彰化縣": "彰化關帝廟",
-        "南投縣": "日月潭文武廟",
-        "雲林縣": "四湖參天宮",
-        "嘉義縣": "嘉義南天門太子行宮",
-        "嘉義市": "嘉義文財殿",
-        "台南市": "台灣祀典武廟",
-        "高雄市": "高雄關帝廟 (武廟)",
-        "屏東縣": "車城統埔鎮安宮",
-        "宜蘭縣": "礁溪協天廟",
-        "花蓮縣": "花蓮聖天宮",
-        "台東縣": "台東關帝廟",
-        "澎湖縣": "澎湖文澳城隍廟",
-        "金門縣": "金門關帝廟",
-        "連江縣": "馬祖南竿牛峰境",
-        "default": "雲林北港武德宮 (財神開基祖廟)"
+        "台北市": "台北行天宮", "新北市": "金瓜石勸濟堂", "基隆市": "基隆聖安宮",
+        "桃園市": "大溪普濟堂", "新竹縣": "普元宮", "新竹市": "古奇峰普天宮",
+        "苗栗縣": "玉清宮", "台中市": "台中南天宮", "彰化縣": "彰化關帝廟",
+        "南投縣": "日月潭文武廟", "雲林縣": "四湖參天宮", "嘉義縣": "嘉義南天門太子行宮",
+        "嘉義市": "嘉義文財殿", "台南市": "台灣祀典武廟", "高雄市": "高雄關帝廟 (武廟)",
+        "屏東縣": "車城統埔鎮安宮", "宜蘭縣": "礁溪協天廟", "花蓮縣": "花蓮聖天宮",
+        "台東縣": "台東關帝廟", "澎湖縣": "澎湖文澳城隍廟", "金門縣": "金門關帝廟",
+        "連江縣": "馬祖南竿牛峰境", "default": "雲林北港武德宮 (財神開基祖廟)"
     },
     "天上聖母 (媽祖)": {
         "key": "mazu",
-        "台北市": "松山慈祐宮 / 關渡宮",
-        "新北市": "板橋慈惠宮",
-        "基隆市": "慶安宮",
-        "桃園市": "中壢仁海宮",
-        "新竹縣": "竹北天后宮",
-        "新竹市": "新竹長和宮",
-        "苗栗縣": "白沙屯拱天宮",
-        "台中市": "大甲鎮瀾宮 / 旱溪樂成宮",
-        "彰化縣": "鹿港天后宮",
-        "南投縣": "集集廣盛宮",
-        "雲林縣": "北港朝天宮",
-        "嘉義縣": "新港奉天宮",
-        "嘉義市": "嘉義朝天宮",
-        "台南市": "大天后宮 / 正統鹿耳門聖母廟",
-        "高雄市": "旗津天后宮",
-        "屏東縣": "屏東慈鳳宮",
-        "宜蘭縣": "南方澳南天宮",
-        "花蓮縣": "花蓮港天宮",
-        "台東縣": "台東天后宮",
-        "澎湖縣": "澎湖天后宮",
-        "金門縣": "金門天后宮",
-        "連江縣": "馬祖南竿天后宮",
-        "default": "雲林北港朝天宮"
+        "台北市": "松山慈祐宮 / 關渡宮", "新北市": "板橋慈惠宮", "基隆市": "慶安宮",
+        "桃園市": "中壢仁海宮", "新竹縣": "竹北天后宮", "新竹市": "新竹長和宮",
+        "苗栗縣": "白沙屯拱天宮", "台中市": "大甲鎮瀾宮", "彰化縣": "鹿港天后宮",
+        "南投縣": "集集廣盛宮", "雲林縣": "北港朝天宮", "嘉義縣": "新港奉天宮",
+        "嘉義市": "嘉義朝天宮", "台南市": "大天后宮", "高雄市": "旗津天后宮",
+        "屏東縣": "屏東慈鳳宮", "宜蘭縣": "南方澳南天宮", "花蓮縣": "花蓮港天宮",
+        "台東縣": "台東天后宮", "澎湖縣": "澎湖天后宮", "金門縣": "金門天后宮",
+        "連江縣": "馬祖南竿天后宮", "default": "雲林北港朝天宮"
     },
     "黑虎將軍/武財神": {
         "key": "tiger",
-        "台北市": "北投關渡宮 (財神洞)",
-        "新北市": "石碇五路財神廟",
-        "桃園市": "南崁五福宮",
-        "台中市": "台中廣天宮",
-        "雲林縣": "北港武德宮 (五路財神祖廟)",
-        "台南市": "南鯤鯓代天府",
-        "高雄市": "旗山八路財神廟",
-        "屏東縣": "枋山五路財神廟",
+        "台北市": "北投關渡宮 (財神洞)", "新北市": "石碇五路財神廟", "桃園市": "南崁五福宮",
+        "台中市": "台中廣天宮", "雲林縣": "北港武德宮 (五路財神祖廟)", "台南市": "南鯤鯓代天府",
+        "高雄市": "旗山八路財神廟", "屏東縣": "枋山五路財神廟",
         "default": "北港武德宮 (虎爺大本營)"
     },
     "中壇元帥 (三太子)": {
         "key": "prince",
-        "台北市": "社子島坤天亭",
-        "新北市": "新莊保元宮",
-        "桃園市": "桃園護國宮 (太子廟)",
-        "新竹市": "指澤宮",
-        "台中市": "三陽玉府天宮",
-        "台南市": "新營太子宮 (全台總廟)",
+        "台北市": "社子島坤天亭", "新北市": "新莊保元宮", "桃園市": "桃園護國宮 (太子廟)",
+        "新竹市": "指澤宮", "台中市": "三陽玉府天宮", "台南市": "新營太子宮 (全台總廟)",
         "高雄市": "高雄三鳳宮",
         "default": "台南新營太子宮 (全台總廟)"
     }
@@ -97,10 +58,8 @@ st.markdown("""
     .stApp { background-color: #0E1117; }
     h1, h2, h3 { color: #D4AF37 !important; font-family: "Microsoft JhengHei", sans-serif; }
     
-    /* 輸入框優化 */
-    .stSelectbox label, .stDateInput label, .stTimeInput label {
-        color: #D4AF37 !important;
-        font-weight: bold;
+    .stSelectbox label, .stDateInput label, .stTimeInput label, .stCheckbox label {
+        color: #D4AF37 !important; font-weight: bold;
     }
 
     .bazi-box {
@@ -131,14 +90,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- 4. 命理與配對邏輯 ---
-def analyze_destiny_v2(birth_date, birth_time, user_location):
+def analyze_destiny_v3(birth_date, birth_time, user_location):
     # A. 命盤計算
     solar = Solar.fromYmdHms(birth_date.year, birth_date.month, birth_date.day, birth_time.hour, birth_time.minute, 0)
     lunar = solar.getLunar()
     ba_zi = [lunar.getYearInGanZhi(), lunar.getMonthInGanZhi(), lunar.getDayInGanZhi(), lunar.getTimeInGanZhi()]
     month = birth_date.month
     
-    # B. 判斷神老闆 (五行調候)
+    # B. 判斷神老闆
     if 2 <= month <= 4: # 春 (木旺缺金)
         god_name = "武財神 (關聖帝君)"
         reason = "春木過旺，需金修剪。您的神老闆是【關聖帝君】，祂能斬斷職場小人，助您決策果斷，正財穩固。"
@@ -198,13 +157,18 @@ if submit:
     # 執行運算
     with st.spinner('⏳ 正在連線天干地支資料庫...'):
         time_module.sleep(0.8)
-    data = analyze_destiny_v2(b_date, b_time, user_loc)
+    data = analyze_destiny_v3(b_date, b_time, user_loc)
 
-    # 寫入 Google Sheets (包在 try-except 避免沒設定 Secrets 時報錯)
+    # --- 關鍵修正區：寫入 Google Sheets 並顯示錯誤 ---
     if agree:
         try:
+            # 建立連線 (若 Secrets 沒設定好，這裡會報錯)
             conn = st.connection("gsheets", type=GSheetsConnection)
-            existing_data = conn.read(worksheet="Sheet1", usecols=list(range(6)), ttl=5)
+            
+            # 讀取現有資料
+            existing_data = conn.read(worksheet="Sheet1", usecols=list(range(6)), ttl=0)
+            
+            # 準備新資料
             new_row = pd.DataFrame([{
                 "填寫時間": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "居住縣市": user_loc,
@@ -213,10 +177,18 @@ if submit:
                 "推薦神明": data['god'],
                 "推薦原因": data['reason']
             }])
+            
+            # 合併並寫回
             updated_df = pd.concat([existing_data, new_row], ignore_index=True)
             conn.update(worksheet="Sheet1", data=updated_df)
+            
+            # 成功提示 (可選)
+            # st.toast("✅ 資料已安全上鏈", icon="☁️")
+            
         except Exception as e:
-            pass # 靜默處理錯誤
+            # 這裡會把錯誤顯示在紅框裡，讓你知道哪裡錯
+            st.error(f"⚠️ 資料庫寫入失敗，請檢查後台設定。錯誤訊息：{e}")
+            st.info("💡 雖然寫入失敗，但不影響下方算命結果顯示。")
 
     # 1. 八字區
     st.markdown(f"""
