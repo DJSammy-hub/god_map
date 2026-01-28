@@ -1,4 +1,4 @@
 streamlit
-lunar_python
+lunar-python
 pandas
 streamlit-gsheets
