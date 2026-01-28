@@ -4,7 +4,7 @@ import time as time_module
 from lunar_python import Lunar, Solar
 
 # --- 1. 頁面設定 ---
-st.set_page_config(page_title="神職應援｜全台神廟地圖", page_icon="📍", layout="centered")
+st.set_page_config(page_title="神職應援，找到自己的老闆｜全台廟宇地圖", page_icon="📍", layout="centered")
 
 # --- 2. 核心資料庫 (The Brain) ---
 # 這裡建立了神明與各地廟宇的關聯。您可以隨時擴充這個名單。
