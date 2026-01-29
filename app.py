@@ -3,14 +3,14 @@ from datetime import datetime, time
 import time as time_module
 from lunar_python import Lunar, Solar
 
-# --- 1. 頁面設定 (全面更名) ---
+# --- 1. 頁面設定 ---
 st.set_page_config(
     page_title="尋找我的神老闆｜AI 職場運勢解析", 
     page_icon="⛩️", 
     layout="centered"
 )
 
-# --- 2. CSS 美化 (黑金旗艦版) ---
+# --- 2. CSS 美化 (V13.0 IG 網紅分享版) ---
 st.markdown("""
 <style>
     .stApp { background-color: #0E1117; }
@@ -28,19 +28,44 @@ st.markdown("""
         margin-bottom: 20px;
     }
     
-    /* 流年運勢卡 (新增) */
-    .fortune-card {
-        background: linear-gradient(135deg, #262730 0%, #1a1c24 100%);
-        color: #FFF; padding: 25px; border-radius: 10px;
-        border-left: 6px solid #E63946;
+    /* 🔥 重點：IG 限動專用卡片設計 */
+    .ig-card {
+        background: linear-gradient(180deg, #262730 0%, #000000 100%);
+        border: 2px solid #D4AF37;
+        border-radius: 15px;
+        padding: 30px 20px;
+        text-align: center;
         margin-bottom: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        position: relative;
+    }
+    .ig-card::before {
+        content: "2026 運勢御守";
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #D4AF37;
+        color: #000;
+        padding: 2px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: bold;
     }
     
     .keyword-tag {
-        background-color: #E63946; color: white; padding: 4px 10px;
-        border-radius: 20px; font-size: 14px; font-weight: bold;
-        display: inline-block; margin-bottom: 10px;
+        background-color: #E63946; color: white; padding: 8px 16px;
+        border-radius: 30px; font-size: 20px; font-weight: bold;
+        display: inline-block; margin: 15px 0;
+        box-shadow: 0 4px 10px rgba(230, 57, 70, 0.5);
+    }
+    
+    .god-boss-text {
+        font-size: 24px; color: #D4AF37; font-weight: bold; margin-top: 10px;
+    }
+    
+    .fortune-desc-text {
+        color: #DDD; font-size: 14px; line-height: 1.6; margin-top: 15px;
     }
 
     /* 推薦卡片 */
@@ -70,33 +95,32 @@ st.markdown("""
 def get_god_data(god_key):
     db = {
         "guan_gong": [ 
-            {"name": "雲林北港武德宮", "feature": "武財神祖廟，擁有天庫金爐，最適合補財庫與求事業運。"},
-            {"name": "台北行天宮", "feature": "北台灣首選，不燒香心誠則靈，收驚安神，求職場穩定。"},
-            {"name": "高雄關帝廟", "feature": "南台灣武廟代表，設有五路財神殿，業務與生意人必拜。"}
+            {"name": "雲林北港武德宮", "feature": "武財神祖廟，擁有天庫金爐，補財庫必去。"},
+            {"name": "台北行天宮", "feature": "北台灣首選，不燒香心誠則靈，求職場穩定。"},
+            {"name": "高雄關帝廟", "feature": "南台灣武廟代表，設有五路財神殿，業務必拜。"}
         ],
         "mazu": [
-            {"name": "大甲鎮瀾宮", "feature": "全台香火最鼎盛，媽祖慈悲，適合求平安、人脈與貴人運。"},
-            {"name": "北港朝天宮", "feature": "媽祖信仰總本山，靈氣充足，適合創業者來求靈感。"},
-            {"name": "板橋慈惠宮", "feature": "郭台銘發跡地，許多企業家都會來拜，偏財運極強。"}
+            {"name": "大甲鎮瀾宮", "feature": "全台香火最鼎盛，媽祖慈悲，適合求平安與人脈。"},
+            {"name": "北港朝天宮", "feature": "媽祖信仰總本山，靈氣充足，適合創業者求靈感。"},
+            {"name": "板橋慈惠宮", "feature": "郭台銘發跡地，許多企業家會來拜，偏財運極強。"}
         ],
         "baosheng": [
-            {"name": "大龍峒保安宮", "feature": "國定古蹟，醫神保生大帝坐鎮，求健康、固本、安神首選。"},
-            {"name": "台南學甲慈濟宮", "feature": "開基保生大帝，歷史悠久，擁有上白礁祭典，神威顯赫。"},
+            {"name": "大龍峒保安宮", "feature": "國定古蹟，醫神保生大帝，求健康、安神首選。"},
+            {"name": "台南學甲慈濟宮", "feature": "開基保生大帝，歷史悠久，擁有上白礁祭典。"},
             {"name": "台中元保宮", "feature": "台中大道公廟，守護鄉里，適合祈求工作根基穩固。"}
         ],
         "tiger": [
-            {"name": "石碇五路財神廟", "feature": "金碧輝煌，虎爺愛吃生雞蛋，求偏財、業績爆發必去。"},
-            {"name": "新港奉天宮", "feature": "桌上金虎爺，可換錢水，財源滾滾，適合做生意的人。"}
+            {"name": "石碇五路財神廟", "feature": "金碧輝煌，虎爺愛吃生雞蛋，求偏財、業績必去。"},
+            {"name": "新港奉天宮", "feature": "桌上金虎爺，可換錢水，財源滾滾。"}
         ],
         "prince": [
-            {"name": "新營太子宮", "feature": "太子爺總廟，分靈無數，求創新、動力、突破僵局首選。"},
+            {"name": "新營太子宮", "feature": "太子爺總廟，分靈無數，求創新、動力首選。"},
             {"name": "高雄三鳳宮", "feature": "南台太子廟代表，建築宏偉，守護年輕創業者。"}
         ]
     }
     return db.get(god_key, [])
 
 def get_local_temples(god_key, city):
-    # 簡易在地資料庫 (可自行擴充)
     local = {
         ("baosheng", "台北市"): [{"name": "大龍峒保安宮", "feature": "米其林三星古蹟，求藥籤靈驗。"}],
         ("baosheng", "新北市"): [{"name": "樹林濟安宮", "feature": "樹林大廟，保生大帝坐鎮。"}],
@@ -104,76 +128,61 @@ def get_local_temples(god_key, city):
         ("guan_gong", "新北市"): [{"name": "金瓜石勸濟堂", "feature": "全台最大銅座關公。"}],
         ("mazu", "台北市"): [{"name": "松山慈祐宮", "feature": "饒河夜市旁，求人緣桃花。"}],
         ("mazu", "台中市"): [{"name": "樂成宮", "feature": "旱溪媽祖，月老也很有名。"}],
-        # ... (其他縣市可依此類推)
     }
     return local.get((god_key, city), [])
 
 # --- 4. 核心演算法 (V12.0 流年運勢引擎) ---
 def analyze_destiny_v12(birth_date, birth_time, user_location):
-    # A. 基礎排盤
     solar = Solar.fromYmdHms(birth_date.year, birth_date.month, birth_date.day, birth_time.hour, birth_time.minute, 0)
     lunar = solar.getLunar()
     ba_zi = [lunar.getYearInGanZhi(), lunar.getMonthInGanZhi(), lunar.getDayInGanZhi(), lunar.getTimeInGanZhi()]
-    day_master = lunar.getDayGan() # 元神 (例如：甲、乙...)
+    day_master = lunar.getDayGan()
     month = birth_date.month
     
-    # B. 抓取當年流年 (例如 2026 = 丙午)
     current_date = datetime.now()
     current_lunar = Lunar.fromDate(current_date)
-    current_year_gan = current_lunar.getYearGan() # 流年天干 (例如 丙)
-    current_year_zhi = current_lunar.getYearZhi() # 流年地支 (例如 午)
-    current_year_str = f"{current_year_gan}{current_year_zhi}" # 丙午
+    current_year_gan = current_lunar.getYearGan() 
+    current_year_zhi = current_lunar.getYearZhi()
+    current_year_str = f"{current_year_gan}{current_year_zhi}" 
     
-    # C. 流年運勢分析 (十神簡易版)
-    # 邏輯：看「流年天干」對「元神」的作用
     fortune_title = ""
     fortune_desc = ""
     fortune_keyword = ""
     
-    # 五行對照表
     wuxing = {"甲":"木", "乙":"木", "丙":"火", "丁":"火", "戊":"土", "己":"土", "庚":"金", "辛":"金", "壬":"水", "癸":"水"}
-    dm_elem = wuxing[day_master] # 元神五行
-    yr_elem = wuxing[current_year_gan] # 流年五行 (2026是火)
+    dm_elem = wuxing[day_master]
+    yr_elem = wuxing[current_year_gan]
 
-    # 判斷關係
     relation = ""
-    if dm_elem == yr_elem: relation = "比劫" # 同我 (競爭/花費)
-    elif (dm_elem=="木" and yr_elem=="火") or (dm_elem=="火" and yr_elem=="土") or (dm_elem=="土" and yr_elem=="金") or (dm_elem=="金" and yr_elem=="水") or (dm_elem=="水" and yr_elem=="木"): relation = "食傷" # 我生 (才華/洩氣)
-    elif (dm_elem=="木" and yr_elem=="土") or (dm_elem=="火" and yr_elem=="金") or (dm_elem=="土" and yr_elem=="水") or (dm_elem=="金" and yr_elem=="木") or (dm_elem=="水" and yr_elem=="火"): relation = "財星" # 我剋 (賺錢/忙碌)
-    elif (dm_elem=="木" and yr_elem=="金") or (dm_elem=="火" and yr_elem=="水") or (dm_elem=="土" and yr_elem=="木") or (dm_elem=="金" and yr_elem=="火") or (dm_elem=="水" and yr_elem=="土"): relation = "官殺" # 剋我 (壓力/升遷)
-    else: relation = "印星" # 生我 (貴人/學習)
+    if dm_elem == yr_elem: relation = "比劫"
+    elif (dm_elem=="木" and yr_elem=="火") or (dm_elem=="火" and yr_elem=="土") or (dm_elem=="土" and yr_elem=="金") or (dm_elem=="金" and yr_elem=="水") or (dm_elem=="水" and yr_elem=="木"): relation = "食傷"
+    elif (dm_elem=="木" and yr_elem=="土") or (dm_elem=="火" and yr_elem=="金") or (dm_elem=="土" and yr_elem=="水") or (dm_elem=="金" and yr_elem=="木") or (dm_elem=="水" and yr_elem=="火"): relation = "財星"
+    elif (dm_elem=="木" and yr_elem=="金") or (dm_elem=="火" and yr_elem=="水") or (dm_elem=="土" and yr_elem=="木") or (dm_elem=="金" and yr_elem=="火") or (dm_elem=="水" and yr_elem=="土"): relation = "官殺"
+    else: relation = "印星"
 
-    # 產生流年文案
     if relation == "比劫":
         fortune_keyword = "廣結善緣"
         fortune_title = f"{current_year_str}年是您的【人脈競爭年】"
-        fortune_desc = "今年社交活動多，開銷大，容易有同儕競爭。好處是朋友多，壞處是錢財難留。建議多拜**武財神**守財，或**媽祖**求圓融。"
+        fortune_desc = "社交活動多，開銷大，但朋友就是錢脈。建議多拜武財神守財，或媽祖求圓融。"
     elif relation == "食傷":
         fortune_keyword = "才華洋溢"
         fortune_title = f"{current_year_str}年是您的【表現發揮年】"
-        fortune_desc = "今年您的點子特別多，才華擋不住，是展現自我的好時機！但要小心「做多得少」或過勞。建議拜**保生大帝**顧好身體，或**太子爺**保持動力。"
+        fortune_desc = "點子特別多，才華擋不住！但要小心過勞。建議拜保生大帝顧身體，或太子爺保持動力。"
     elif relation == "財星":
         fortune_keyword = "財源滾滾"
         fortune_title = f"{current_year_str}年是您的【收穫得財年】"
-        fortune_desc = "恭喜！今年財氣旺，賺錢機會多，是衝刺業績的好年。但會非常忙碌。建議拜**虎爺**咬錢，並請**關公**幫您看守財庫。"
+        fortune_desc = "財氣旺，賺錢機會多，是衝刺業績的好年。建議拜虎爺咬錢，並請關公幫您看守財庫。"
     elif relation == "官殺":
         fortune_keyword = "責任升遷"
         fortune_title = f"{current_year_str}年是您的【壓力升遷年】"
-        fortune_desc = "今年主管會給您重任，壓力雖大，但也是升官掌權的好機會。容易犯小人，建議拜**關聖帝君**斬小人，或**王爺**來制煞。"
-    else: # 印星
+        fortune_desc = "主管給重任，壓力大但能升官。容易犯小人，建議拜關聖帝君斬小人，或王爺制煞。"
+    else: 
         fortune_keyword = "貴人提攜"
         fortune_title = f"{current_year_str}年是您的【沉澱學習年】"
-        fortune_desc = "今年適合進修、規劃，長輩緣極佳，容易得到貴人幫助。步調稍慢但穩健。建議拜**文昌**或**保生大帝**，穩固根基。"
+        fortune_desc = "適合進修，長輩緣極佳。步調稍慢但穩健。建議拜文昌或保生大帝，穩固根基。"
 
-    # D. 決定神老闆 (雙軌制：主神+輔神)
-    # 這裡結合 V11 的邏輯 + 流年建議
     main_god = {}
     sec_god = {}
-    
-    # 簡單邏輯：
-    # 財星/比劫年 -> 主推關公 (守財/競爭)
-    # 食傷/官殺年 -> 主推保生大帝 (顧身/抗壓)
-    # 印星年 -> 主推媽祖 (貴人)
     
     if relation in ["財星", "比劫"]:
         main_god = {"name": "武財神 (關聖帝君)", "key": "guan_gong", "role": "鎮守財庫"}
@@ -184,14 +193,12 @@ def analyze_destiny_v12(birth_date, birth_time, user_location):
     elif relation in ["食傷"]:
          main_god = {"name": "保生大帝", "key": "baosheng", "role": "固本培元"}
          sec_god = {"name": "天上聖母 (媽祖)", "key": "mazu", "role": "廣結善緣"}
-    else: # 印星
+    else: 
          main_god = {"name": "天上聖母 (媽祖)", "key": "mazu", "role": "接引貴人"}
          sec_god = {"name": "武財神 (關聖帝君)", "key": "guan_gong", "role": "執行魄力"}
 
-    # E. 組合名單
     final_list = []
     
-    # 1. 找主神 (在地)
     main_local = get_local_temples(main_god['key'], user_location)
     main_famous = get_god_data(main_god['key'])
     sec_famous = get_god_data(sec_god['key'])
@@ -250,30 +257,41 @@ if submit:
         time_module.sleep(0.8)
     data = analyze_destiny_v12(b_date, b_time, user_loc)
 
-    # 1. 八字區
+    # 1. IG 截圖專用卡 (視覺強化)
     st.markdown(f"""
-    <div class="bazi-box">
-        <div style="font-size:14px; color:#888;">您的職場本命盤</div>
-        <div style="font-size:24px; margin-top:10px;">
-            {data['ba_zi'][0]}   {data['ba_zi'][1]}   <span style="color:#FFF; border-bottom:2px solid #D4AF37;">{data['ba_zi'][2]}</span>   {data['ba_zi'][3]}
-        </div>
-        <div style="font-size:12px; color:#666; margin-top:5px;">年柱     月柱     <b style="color:#D4AF37">元神({data['day_master']})</b>     時柱</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 2. 流年運勢區 (新增重點！)
-    st.markdown(f"""
-    <div class="fortune-card">
-        <div style="font-size:14px; color:#AAA; margin-bottom:5px;">📅 {data['current_year']} 流年運勢解析</div>
+    <div class="ig-card">
+        <div style="font-size:16px; color:#AAA;">📅 {data['current_year']} 職場運勢關鍵字</div>
         <div class="keyword-tag">🔥 {data['fortune_keyword']}</div>
-        <h3 style="color:#FFF !important; margin-top:0;">{data['fortune_title']}</h3>
-        <p style="color:#EEE; line-height: 1.6;">{data['fortune_desc']}</p>
+        <div class="fortune-desc-text" style="color:#FFF; font-weight:bold; font-size:18px;">
+            {data['fortune_title']}
+        </div>
+        <div class="fortune-desc-text">
+            {data['fortune_desc']}
+        </div>
+        <hr style="border-color:#444; margin: 20px 0;">
+        <div style="font-size:14px; color:#AAA;">⛩️ 您的神老闆陣容</div>
+        <div class="god-boss-text">
+             {data['main_god']['name']} + {data['sec_god']['name']}
+        </div>
+        <div style="margin-top:20px; font-size:12px; color:#666;">
+            📍 截圖分享上傳 IG 限動，領取開運能量
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
+    # 2. 分享按鈕區 (新功能)
+    c_share1, c_share2 = st.columns([3, 1])
+    with c_share1:
+        st.text_input("🔗 複製連結分享給朋友", value="https://god-map.streamlit.app", disabled=True)
+    with c_share2:
+        # 這裡只能做連結跳轉，無法直接貼文
+        st.link_button("去 IG 發文", "https://instagram.com/")
+
+    st.markdown("---")
+    
     # 3. 推薦清單
-    st.markdown(f"<h3 style='color:#D4AF37; margin-top:30px;'>⛩️ 您的專屬神老闆團隊</h3>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color:#AAA; font-size:14px;'>根據流年運勢，建議您組成【{data['main_god']['name']} + {data['sec_god']['name']}】的雙神陣容：</p>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color:#D4AF37;'>⛩️ 您的專屬參拜清單</h3>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#AAA; font-size:14px;'>根據流年運勢，建議您前往以下辦事處：</p>", unsafe_allow_html=True)
 
     for i, temple in enumerate(data['temple_list']):
         if temple['type'] == 'main':
